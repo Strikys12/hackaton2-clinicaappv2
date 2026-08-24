@@ -1,13 +1,14 @@
 package co.generation.clinica.service;
 
 import co.generation.clinica.interfaces.Consultable;
+import co.generation.clinica.model.EstadoTurno;
 import co.generation.clinica.model.Medico;
 import co.generation.clinica.model.Paciente;
 import co.generation.clinica.model.Turno;
-
+import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Comparator;
 
 public class ClinicaService implements Consultable {
 
@@ -34,55 +35,134 @@ public class ClinicaService implements Consultable {
         return turnos;
     }
 
-
-    // METODO MÉDICO
-
-    public void registrarMedico(Medico m) {
-        if (!m.esValido()) {
-            throw new IllegalArgumentException("Los datos del médico no son válidos");
-        }
-
-        if (medicos.contains(m)) {
-            throw new IllegalArgumentException("El médico ya se encuentra registrado");
-        }
-
-        int nuevoId = 1;
-        for (Medico medico : medicos) {
-            if (medico.getId() >= nuevoId) {
-                nuevoId = medico.getId() + 1;
-            }
-        }
-        m.setId(nuevoId);
-
-        medicos.add(m);
-
-        System.out.println("Médico registrado correctamente");
-
-    }
-
     public Medico buscarPorNombreApellido(String nombre, String apellido) {
-        for (Medico medico : medicos) {
+        if (nombre == null || apellido == null) return null;
 
-            if (medico.getNombre().equalsIgnoreCase(nombre)
-                    && medico.getApellido().equalsIgnoreCase(apellido)) {
-                return medico;
+        for (Medico medicos : this.medicos) {
+            if (medicos.getNombre().equalsIgnoreCase(nombre.trim()) &&
+                    medicos.getApellido().equalsIgnoreCase(apellido.trim())) {
+                return medicos;
             }
-
         }
         return null;
     }
 
-    public void listarMedicos() {
-        if (medicos.isEmpty()) {
-            System.out.println("No hay médicos registrados.");
+
+    public void asignarTurno(Turno t) {
+        if (buscarPorCedula(t.getPaciente().getCedula()) == null) {
+            System.out.println("El paciente no está registrado");
             return;
         }
-        List<Medico> copia = new ArrayList<>(medicos);
-        copia.sort(
-                Comparator.comparing(Medico::getEspecialidad)
-                        .thenComparing(Medico::getApellido, String.CASE_INSENSITIVE_ORDER));
-        for (Medico medico : copia) {
-            System.out.println(medico);
+        if (buscarPorNombreApellido(t.getMedico().getNombre(), t.getMedico().getApellido()) == null) {
+            System.out.println("El médico no se encuentra registrado.");
+            return;
         }
+
+        if (turnos.contains(t)) {
+            System.out.println("El médico ya tiene un turno asignado para ese horario");
+            return;
+        }
+
+        int maxId = 0;
+        for (Turno turno : turnos) {
+            if (turno.getId() > maxId) {
+                maxId = turno.getId();
+            }
+        }
+        t.setId(maxId + 1);
+        t.setEstado(EstadoTurno.PENDIENTE);
+
+        turnos.add(t);
+        System.out.println("Turno asignado con éxito!\n ID: " + t.getId() + t.toString());
     }
+
+    public void cancelarTurno(int id) {
+        Turno turnoEncontrado = null;
+
+        for (Turno t : turnos) {
+            if (t.getId() == id) {
+                turnoEncontrado = t;
+                break;
+            }
+        }
+
+        if (turnoEncontrado == null) {
+            System.out.println("El turno no existe");
+            return;
+        }
+
+        if (turnoEncontrado.getEstado() == EstadoTurno.CANCELADO || turnoEncontrado.getEstado() == EstadoTurno.ATENDIDO) {
+            System.out.println("No se puede cancelar el turno");
+            return;
+        }
+
+
+        turnoEncontrado.setEstado(EstadoTurno.CANCELADO);
+        System.out.println("Turno #" + id + " cancelado exitosamente.");
+    }
+
+    public void cambiarEstadoTurno(int id, EstadoTurno nuevo) {
+        Turno turnoEncontrado = null;
+
+        for (Turno t : turnos) {
+            if (t.getId() == id) {
+                turnoEncontrado = t;
+                break;
+            }
+        }
+
+        if (turnoEncontrado == null) {
+            System.out.println("Turno no encontrado");
+            return;
+        }
+
+        turnoEncontrado.setEstado(nuevo);
+        System.out.println("El turno " + id + " Se ha cambiado");
+
+
+    }
+
+    //Métodos interfaz
+    @Override
+    public List<Turno> listarTurnosDelDia(LocalDate fecha) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (fecha == null) return filtrados;
+
+        for (Turno t : turnos) {
+            if (t.getFechaHora().toLocalDate().equals(fecha)) {
+                filtrados.add(t);
+            }
+        }
+
+        filtrados.sort(Comparator.comparing(Turno::getFechaHora));
+        return filtrados;
+    }
+
+    @Override
+    public List<Turno> buscarPorPaciente(Paciente paciente) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (paciente == null) return filtrados;
+
+        for (Turno t : turnos) {
+            if (t.getPaciente().equals(paciente)) {
+                filtrados.add(t);
+            }
+        }
+        return filtrados;
+    }
+
+    @Override
+    public List<Turno> buscarPorMedico(Medico medico) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (medico == null) return filtrados;
+
+        for (Turno t : turnos) {
+            if (t.getMedico().equals(medico)) {
+                filtrados.add(t);
+            }
+        }
+        return filtrados;
+    }
+
 }
+
