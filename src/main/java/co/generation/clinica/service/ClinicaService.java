@@ -5,11 +5,11 @@ import co.generation.clinica.model.Medico;
 import co.generation.clinica.model.Paciente;
 import co.generation.clinica.model.Turno;
 import co.generation.clinica.model.EstadoTurno;
-import co.generation.clinica.model.Especialidad;
 
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ClinicaService implements Consultable {
@@ -39,15 +39,6 @@ public class ClinicaService implements Consultable {
 
 //Métodos turnos
 
-    public Paciente buscarPorCedula(String cedula){
-        if (cedula == null) return  null;
-
-        for(Paciente paciente : pacientes){
-            if(paciente.getCedula().equalsIgnoreCase(cedula.trim())){
-                return paciente;
-            }
-        }return null;
-    }
 
 
     public Medico buscarPorNombreApellido(String nombre, String apellido) {
@@ -88,9 +79,10 @@ public class ClinicaService implements Consultable {
             }
         }
         t.setId(maxId + 1);
+        t.setEstado(EstadoTurno.PENDIENTE);
 
         turnos.add(t);
-        System.out.println("Turno asignado con éxito!\n ID: " + t.getId() + toString());
+        System.out.println("Turno asignado con éxito!\n ID: " + t.getId() + t.toString());
     }
 
     public void cancelarTurno(int id){
@@ -139,6 +131,49 @@ public class ClinicaService implements Consultable {
 
 
 
+    }
+
+    //Métodos interfaz
+    @Override
+    public List<Turno> listarTurnosDelDia(LocalDate fecha) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (fecha == null) return filtrados;
+
+        for (Turno t : turnos) {
+            if (t.getFechaHora().toLocalDate().equals(fecha)) {
+                filtrados.add(t);
+            }
+        }
+
+        filtrados.sort(Comparator.comparing(Turno::getFechaHora));
+        return filtrados;
+    }
+
+    @Override
+    public List<Turno> buscarPorPaciente(Paciente paciente){
+        List<Turno> filtrados = new ArrayList<>();
+        if(paciente == null) return  filtrados;
+
+        for(Turno t: turnos){
+            if(t.getPaciente().equals(paciente)){
+                filtrados.add(t);
+            }
+        }
+
+        return filtrados;
+    }
+
+    @Override
+    public List<Turno> buscarPorMedico(Medico medico){
+        List<Turno> filtrados = new ArrayList<>();
+        if(medico == null) return filtrados;
+
+        for(Turno t: turnos){
+            if(t.getMedico().equals(medico)){
+                filtrados.add(t);
+            }
+        }
+        return filtrados;
     }
 
 }
