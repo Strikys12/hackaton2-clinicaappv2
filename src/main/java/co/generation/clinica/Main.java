@@ -1,4 +1,5 @@
 package co.generation.clinica;
+import co.generation.clinica.datos.DatosCSV;
 import co.generation.clinica.model.*;
 import co.generation.clinica.service.ClinicaService;
 
@@ -14,7 +15,7 @@ public class Main {
         //Crear ClinicaService
         ClinicaService cs = new ClinicaService();
         //Cargar datos
-//        DatosCSV.cargar(cs);
+        DatosCSV.cargar(cs);
         boolean salir = false;
         do {
             System.out.println("++========================================++");
@@ -71,10 +72,10 @@ public class Main {
                     System.out.println("Ingrese el numero de la opcion de la especialidad del medico \n 1. General \n 2. Pediatria \n 3. Cardiologia \n 4. Urgencias");
                     int especialidad = scanner.nextInt();
                     switch (especialidad){
-                        case 1 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.GENERAL));}
-                        case 2 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.PEDIATRIA));}
-                        case 3 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.CARDIOLOGIA));}
-                        case 4 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.URGENCIAS));}
+                        case 1 ->{cs.re(new Medico(nombre, apellido, Especialidad.GENERAL));}
+                        case 2 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.PEDIATRIA));}
+                        case 3 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.CARDIOLOGIA));}
+                        case 4 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.URGENCIAS));}
                         default -> System.out.println("Opcion Invalida!");
                     }
                     //registrar medico
@@ -174,7 +175,7 @@ public class Main {
 
         }
         while (!salir);
-
+        DatosCSV.guardar(cs);
 
     }
 }
