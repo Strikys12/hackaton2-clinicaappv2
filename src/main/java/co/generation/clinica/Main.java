@@ -1,10 +1,10 @@
 package co.generation.clinica;
-
-import co.generation.clinica.datos.DatosCSV;
-import co.generation.clinica.model.Especialidad;
-import co.generation.clinica.model.Paciente;
+import co.generation.clinica.model.*;
 import co.generation.clinica.service.ClinicaService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -62,16 +62,87 @@ public class Main {
                     String nombre = scanner.nextLine();
                     String apellido = scanner.nextLine();
                     int especialidad = scanner.nextInt();
+                    //registrar medico
+                }
+                case "3" -> {
+                    String cedula = scanner.nextLine();
+                    String nombre = scanner.nextLine();
+                    String apellido = scanner.nextLine();
+                    Paciente paciente = cs.buscarPorCedula(cedula);
+                    Medico medico = cs.buscarPorNombreApellido(nombre, apellido);
+                    Turno turno = new Turno(paciente, medico, LocalDateTime.now().plusHours(2));
+                    cs.asignarTurno(turno);//asignar turno
+                }
+                case "4" -> {
+                    List<Turno> turnos = cs.listarTurnosDelDia(LocalDate.now());
+                    for (Turno turno : turnos) {
+                        System.out.printf("Turno %d \n Paciente: %s \n Medico: %s \n+ Fecha y Hora: " + turno.getFechaHora(), turno.getId(), turno.getPaciente(), turno.getMedico());
+                    }
+                    //listar turnos del dia
+                }
+                case "5" -> {
+                    System.out.println("Ingrese la cedula del paciente para cancelar su turno");
+                    String cedula = scanner.nextLine();
+                    int turnoId = cs.buscarPorCedula(cedula).getId();
+                    cs.cancelarTurno(turnoId);
+                    //Cancelar turno
+                }
+                case "6" -> {
+                    System.out.println("Ingrese el nombre del medico");
+                    String nombre = scanner.nextLine();
+                    System.out.println("Ingrese el apellido del medico");
+                    String apellido = scanner.nextLine();
+                    Medico medico = cs.buscarPorNombreApellido(nombre, apellido);
+                    List<Turno> turnos = cs.buscarPorMedico(medico);
+                    for (Turno turno : turnos) {
+                        System.out.printf("Turno %d \n Paciente: %s \n Medico: %s \n+ Fecha y Hora: " + turno.getFechaHora(), turno.getId(), turno.getPaciente(), turno.getMedico());
+                    }
 
-                }  //registrar medico
-                case "3" -> System.out.println(cs.getTurnos());  //asignar turno
-                case "4" -> System.out.println(cs.getTurnos());  //listar turnos del dia
-                case "5" -> System.out.println(cs.getTurnos());  //Cancelar turno
-                case "6" -> System.out.println(cs.getTurnos());  //Ver turno por medico
-                case "7" -> System.out.println(cs.getTurnos());  //Ver turno por paciente
-                case "8" -> System.out.println(cs.getTurnos());  //Cambiar estado de turno
-                case "9" -> System.out.println(cs.getTurnos());  //Listar pacientes
-                case "10" -> System.out.println(cs.getTurnos());  //Listar medicos
+                }  //Ver turno por medico
+                case "7" -> {
+                    System.out.println("Ingrese la cedula del paciente");
+                    String cedula = scanner.nextLine();
+                    Paciente paciente = cs.buscarPorCedula(cedula);
+                    List<Turno> turnos = cs.buscarPorPaciente(paciente);
+                    for (Turno turno : turnos) {
+                        System.out.printf("Turno %d \n Paciente: %s \n Medico: %s \n+ Fecha y Hora: " + turno.getFechaHora(), turno.getId(), turno.getPaciente(), turno.getMedico());
+                    }
+                }  //Ver turno por paciente
+                case "8" -> {
+                    System.out.println("Ingrese el ID de su turno");
+                    int idTurno = scanner.nextInt();
+                    System.out.println("Ingrese el numero de la opcion para cambiar el estado del turno \n 1. Pendiente \n 2.Atendido \n 3.Cancelado");
+                    int estado = scanner.nextInt();
+                    switch (estado) {
+                        case 1 -> {
+                            cs.cambiarEstadoTurno(idTurno, EstadoTurno.PENDIENTE);
+                            System.out.println("Cambio realizado");
+                        }
+                        case 2 -> {
+                            cs.cambiarEstadoTurno(idTurno, EstadoTurno.ATENDIDO);
+                            System.out.println("Cambio realizado");
+                        }
+                        case 3 -> {
+                            cs.cambiarEstadoTurno(idTurno, EstadoTurno.CANCELADO);
+                            System.out.println("Cambio realizado");
+                        }
+                        default -> System.out.println("Opcion ingresada incorrecta o ID de turno no encontrado");
+                    }
+
+
+                } //Cambiar estado de turno
+                case "9" -> {
+                    List<Paciente> pacientes = cs.listarPacientes();
+                    for (Paciente paciente : pacientes) {
+                        System.out.printf("Nombre %s \n Apellido: %s \n Cedula %s \n+ Telefonp: %s ", paciente.getNombre(), paciente.getApellido(), paciente.getCedula(), paciente.getTelefono());
+                    }
+                }  //Listar pacientes
+                case "10" -> {
+                    List<Medico> medicos = cs.listarMedicos();
+                    for (Medico medico : medicos) {
+                        System.out.printf("Nombre %s \n Apellido: %s \n+ Especialidad %s ", medico.getNombre(), medico.getApellido(), medico.getEspecialidad().toString());
+                    }
+                }  //Listar medicos
                 default -> {
                     System.out.println("La opcion ingresada es invalida!");
                     System.out.println("Por favor vuelva a intentar0");
