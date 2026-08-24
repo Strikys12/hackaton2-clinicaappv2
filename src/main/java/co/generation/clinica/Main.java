@@ -51,11 +51,16 @@ public class Main {
                     System.out.println("Saliendo del programa");
                 }
                 case "1" -> {
+                    System.out.println("Ingrese la cedula del paciente");
                     String cedula = scanner.nextLine();
+                    System.out.println("Ingrese el nombre del paciente");
                     String nombre = scanner.nextLine();
+                    System.out.println("Ingrese el apellido del paciente");
                     String apellido = scanner.nextLine();
+                    System.out.println("Ingrese el telefono del paciente");
                     String telefono = scanner.nextLine();
                     new Paciente(cedula, nombre, apellido, telefono);
+                    System.out.println("Guardado con exito!");
                     //registrar paciente
                 }
                 case "2" -> {
