@@ -49,7 +49,7 @@ public class Paciente {
     public void setTelefono(String telefono) {
         if (telefono.trim() == "") {
             throw new IllegalArgumentException("Telefono no puede estar vacío!");
-        } else if (telefono.matches("^[0-9]{7,10}$"))){
+        } else if (telefono.matches("^[0-9]{7,10}$")){
             throw new IllegalArgumentException("Telefono invalido!");
 
         }
