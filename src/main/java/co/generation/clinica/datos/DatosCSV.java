@@ -27,5 +27,5 @@ public class DatosCSV {
                 servicio.getPacientes().add(new Paciente(
                         Integer.parseInt(p[0].trim()),
                         p[1].trim(), p[2].trim(), p[3].trim(), p[4].trim()));
-            }
+            } //c
         } catch (IOException e) { System.out.println("Error: " + e.getMessage()); }
