@@ -72,7 +72,7 @@ public class Main {
                     System.out.println("Ingrese el numero de la opcion de la especialidad del medico \n 1. General \n 2. Pediatria \n 3. Cardiologia \n 4. Urgencias");
                     int especialidad = scanner.nextInt();
                     switch (especialidad){
-                        case 1 ->{cs.re(new Medico(nombre, apellido, Especialidad.GENERAL));}
+                        case 1 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.GENERAL));}
                         case 2 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.PEDIATRIA));}
                         case 3 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.CARDIOLOGIA));}
                         case 4 ->{cs.registrarMedico(new Medico(nombre, apellido, Especialidad.URGENCIAS));}
