@@ -64,19 +64,34 @@ public class Main {
                     //registrar paciente
                 }
                 case "2" -> {
+                    System.out.println("Ingrese el nombre del medico");
                     String nombre = scanner.nextLine();
+                    System.out.println("Ingrese el apellido del medico");
                     String apellido = scanner.nextLine();
+                    System.out.println("Ingrese el numero de la opcion de la especialidad del medico \n 1. General \n 2. Pediatria \n 3. Cardiologia \n 4. Urgencias");
                     int especialidad = scanner.nextInt();
+                    switch (especialidad){
+                        case 1 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.GENERAL));}
+                        case 2 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.PEDIATRIA));}
+                        case 3 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.CARDIOLOGIA));}
+                        case 4 ->{cs.registrarPaciente(new Medico(nombre, apellido, Especialidad.URGENCIAS));}
+                        default -> System.out.println("Opcion Invalida!");
+                    }
                     //registrar medico
                 }
                 case "3" -> {
+                    System.out.println("Ingrese la cedula");
                     String cedula = scanner.nextLine();
+
+                    System.out.println("Ingrese el Nombre del medico");
                     String nombre = scanner.nextLine();
+                    System.out.println("Ingrese el apellido del medico");
                     String apellido = scanner.nextLine();
                     Paciente paciente = cs.buscarPorCedula(cedula);
                     Medico medico = cs.buscarPorNombreApellido(nombre, apellido);
                     Turno turno = new Turno(paciente, medico, LocalDateTime.now().plusHours(2));
                     cs.asignarTurno(turno);//asignar turno
+                    System.out.println("Exito!");
                 }
                 case "4" -> {
                     List<Turno> turnos = cs.listarTurnosDelDia(LocalDate.now());

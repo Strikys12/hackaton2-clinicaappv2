@@ -180,7 +180,7 @@ public List<Turno> buscarPorMedico(Medico medico) {
     return filtrados;
 }
 
-public void registrarPaciente(Paciente p) {
+public void registrarPaciente(Medico p) {
     if (!p.esValido()) {
         System.out.println("Error: El paciente no es válido.");
         return;
