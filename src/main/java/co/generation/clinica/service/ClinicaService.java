@@ -138,89 +138,114 @@ public class ClinicaService implements Consultable {
     }
 
 
-//Métodos interfaz
-@Override
-public List<Turno> listarTurnosDelDia(LocalDate fecha) {
-    List<Turno> filtrados = new ArrayList<>();
-    if (fecha == null) return filtrados;
+    //Métodos interfaz
+    @Override
+    public List<Turno> listarTurnosDelDia(LocalDate fecha) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (fecha == null) return filtrados;
 
-    for (Turno t : turnos) {
-        if (t.getFechaHora().toLocalDate().equals(fecha)) {
-            filtrados.add(t);
+        for (Turno t : turnos) {
+            if (t.getFechaHora().toLocalDate().equals(fecha)) {
+                filtrados.add(t);
+            }
         }
+
+        filtrados.sort(Comparator.comparing(Turno::getFechaHora));
+        return filtrados;
     }
 
-    filtrados.sort(Comparator.comparing(Turno::getFechaHora));
-    return filtrados;
-}
+    @Override
+    public List<Turno> buscarPorPaciente(Paciente paciente) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (paciente == null) return filtrados;
 
-@Override
-public List<Turno> buscarPorPaciente(Paciente paciente) {
-    List<Turno> filtrados = new ArrayList<>();
-    if (paciente == null) return filtrados;
-
-    for (Turno t : turnos) {
-        if (t.getPaciente().equals(paciente)) {
-            filtrados.add(t);
+        for (Turno t : turnos) {
+            if (t.getPaciente().equals(paciente)) {
+                filtrados.add(t);
+            }
         }
+        return filtrados;
     }
-    return filtrados;
-}
 
-@Override
-public List<Turno> buscarPorMedico(Medico medico) {
-    List<Turno> filtrados = new ArrayList<>();
-    if (medico == null) return filtrados;
+    @Override
+    public List<Turno> buscarPorMedico(Medico medico) {
+        List<Turno> filtrados = new ArrayList<>();
+        if (medico == null) return filtrados;
 
-    for (Turno t : turnos) {
-        if (t.getMedico().equals(medico)) {
-            filtrados.add(t);
+        for (Turno t : turnos) {
+            if (t.getMedico().equals(medico)) {
+                filtrados.add(t);
+            }
         }
-    }
-    return filtrados;
-}
-
-public void registrarPaciente(Paciente p) {
-    if (!p.esValido()) {
-        System.out.println("Error: El paciente no es válido.");
-        return;
+        return filtrados;
     }
 
-    if (pacientes.contains(p)) {
-        System.out.println("Error: Ya existe un paciente registrado conla cédula " + p.getCedula());
-        return;
-    }
-
-    int nuevoId = pacientes.isEmpty() ? 1 : pacientes.get(pacientes.size() - 1).getId() + 1;
-    p.setId(nuevoId);
-    pacientes.add(p);
-    System.out.println("¡Paciente registrado con éxito! " + p);
-}
-
-public Paciente buscarPorCedula(String cedula) {
-    for (Paciente p : pacientes) {
-        if (p.getCedula().equals(cedula)) {
-            return p;
+    public void registrarPaciente(Paciente p) {
+        if (!p.esValido()) {
+            System.out.println("Error: El paciente no es válido.");
+            return;
         }
-    }
-    return null;
-}
 
-public List<Paciente> listarPacientes() {
-    if (pacientes.isEmpty()) {
-        System.out.println("No hay pacientes registrados en el sistema.");
+        if (pacientes.contains(p)) {
+            System.out.println("Error: Ya existe un paciente registrado conla cédula " + p.getCedula());
+            return;
+        }
+
+        int nuevoId = pacientes.isEmpty() ? 1 : pacientes.get(pacientes.size() - 1).getId() + 1;
+        p.setId(nuevoId);
+        pacientes.add(p);
+        System.out.println("¡Paciente registrado con éxito! " + p);
+    }
+
+    public Paciente buscarPorCedula(String cedula) {
+        for (Paciente p : pacientes) {
+            if (p.getCedula().equals(cedula)) {
+                return p;
+            }
+        }
         return null;
     }
 
-    List<Paciente> copiaLista = new ArrayList<>(pacientes);
+    public List<Paciente> listarPacientes() {
+        if (pacientes.isEmpty()) {
+            System.out.println("No hay pacientes registrados en el sistema.");
+            return null;
+        }
 
-    copiaLista.sort(Comparator.comparing(Paciente::getApellido)
-            .thenComparing(Paciente::getNombre));
+        List<Paciente> copiaLista = new ArrayList<>(pacientes);
 
-    System.out.println("--- LISTA DE PACIENTES ---");
-    for (Paciente p : copiaLista) {
-        System.out.println(p);
+        copiaLista.sort(Comparator.comparing(Paciente::getApellido)
+                .thenComparing(Paciente::getNombre));
+
+        System.out.println("--- LISTA DE PACIENTES ---");
+        for (Paciente p : copiaLista) {
+            System.out.println(p);
+        }
+        return copiaLista;
     }
-    return copiaLista;
-}
+    public void registrarMedico(Medico m) {
+        if (m == null || !m.esValido()) {
+            System.out.println("Error: Los datos del médico no son válidos.");
+            return;
+        }
+
+
+        if (buscarPorNombreApellido(m.getNombre(), m.getApellido()) != null) {
+            System.out.println("Error: Ya existe un médico registrado con el nombre "
+                    + m.getNombre() + " " + m.getApellido());
+            return;
+        }
+
+
+        int maxId = 0;
+        for (Medico med : medicos) {
+            if (med.getId() > maxId) {
+                maxId = med.getId();
+            }
+        }
+        m.setId(maxId + 1);
+
+        medicos.add(m);
+        System.out.println("Médico registrado con éxito: " + m.getDatosRegistro());
+    }
 }
